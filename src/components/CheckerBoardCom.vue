@@ -8,7 +8,7 @@
       <button>两年</button>
       <button>两年半</button>
     </div>
-    <div class="boardCard"></div>
+    <ChessCom></ChessCom>
     <div class="rightOptions">
       <p class="optionsText">⭐</p>
       <button>游戏记录</button>
@@ -20,7 +20,12 @@
 </template>
 
 <script>
+import ChessCom from "@/components/ChessCom";
+
 export default {
+  components: {
+    ChessCom
+  },
   name: "CheckerBoardCom"
 }
 </script>
@@ -35,17 +40,6 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   align-content: center;
-}
-
-.boardCard {
-  margin: 0 auto;
-  width: 30vw;
-  height: 45vw;
-  background-color: #ffa4c459;
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
 }
 
 .leftOptions, .rightOptions {
@@ -74,7 +68,7 @@ button {
   margin: 1vh auto 0;
 }
 
-.rightOptions>button{
+.rightOptions > button {
   border-radius: 0 1rem 1rem 0;
 }
 

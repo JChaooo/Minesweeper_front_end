@@ -1,7 +1,7 @@
 <template>
   <div id="diaLog" v-if="isClose">
     <div class="diaLogCard">
-      <p class="diaLogText">你最好真的是</p>
+      <p class="diaLogText">你最好真的是<br> IKun</p>
       <button class="joinBut" @click="closeDiaLog">开始练习</button>
     </div>
   </div>

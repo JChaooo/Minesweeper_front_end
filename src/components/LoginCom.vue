@@ -2,9 +2,9 @@
   <div id="loginCom" v-if="isClose">
     <div id="diaLog">
       <div class="loginCard">
-        <p class="diaLogText">登录</p>
-        <input type="text" name="username" id="userName" v-model="userName">
-        <input type="password" name="password" id="password" v-model="password">
+        <p class="diaLogText">Ikun通行证</p>
+        <input type="text" name="username" id="userName" v-model="user.userName">
+        <input type="password" name="password" id="password" v-model="user.password">
         <button class="joinBut" @click="login">登录</button>
       </div>
     </div>
@@ -12,13 +12,19 @@
 </template>
 
 <script>
+// import axios from "axios"
+import {api} from "@/request/http";
+
 export default {
   name: "LoginCom",
   data() {
     return {
       isClose: true,
-      userName: "",
-      password: ""
+      user: {
+        "id": "",
+        "userName": "",
+        "password": ""
+      },
     }
   },
   methods: {
@@ -26,8 +32,20 @@ export default {
       this.isClose = false
     },
     login() {
-      console.log(this.userName)
-      console.log(this.password)
+      console.log(this.user.userName)
+      console.log(this.user.password)
+      this.user.id = -1
+      console.log(JSON.stringify(this.user))
+      api({
+        method: 'post',
+        url: '/api/login',
+        data: this.user
+      }).then((res) => {
+        console.log(res)
+      }).catch((err) => {
+        console.log(err);
+      })
+
       this.closeLoginDiaLog()
     }
   }
