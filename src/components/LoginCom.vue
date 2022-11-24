@@ -1,9 +1,9 @@
 <template>
-  <div id="loginCom" v-if="isClose">
+  <div id="loginCom">
     <div id="diaLog">
       <div class="loginCard">
         <p class="diaLogText">Ikun通行证</p>
-        <input type="text" name="username" id="userName" v-model="user.userName">
+        <input type="text" name="name" id="userName" v-model="user.name">
         <input type="password" name="password" id="password" v-model="user.password">
         <button class="joinBut" @click="login">登录</button>
       </div>
@@ -12,8 +12,8 @@
 </template>
 
 <script>
-// import axios from "axios"
 import {api} from "@/request/http";
+import router from "@/router";
 
 export default {
   name: "LoginCom",
@@ -22,19 +22,15 @@ export default {
       isClose: true,
       user: {
         "id": "",
-        "userName": "",
+        "name": "",
         "password": ""
       },
     }
   },
   methods: {
-    closeLoginDiaLog() {
-      this.isClose = false
-    },
     login() {
-      console.log(this.user.userName)
+      console.log(this.user.name)
       console.log(this.user.password)
-      this.user.id = -1
       console.log(JSON.stringify(this.user))
       api({
         method: 'post',
@@ -42,11 +38,14 @@ export default {
         data: this.user
       }).then((res) => {
         console.log(res)
+        if (res.data.state==="OK"){
+          router.push("/checker")
+        }else {
+          alert("登录失败")
+        }
       }).catch((err) => {
         console.log(err);
       })
-
-      this.closeLoginDiaLog()
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div id="diaLog" v-if="isClose">
+  <div id="diaLog">
     <div class="diaLogCard">
       <p class="diaLogText">你最好真的是<br> IKun</p>
       <button class="joinBut" @click="closeDiaLog">开始练习</button>
@@ -8,16 +8,17 @@
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
   name: "DiaLog",
   data() {
     return {
-      isClose:true
     }
   },
   methods:{
     closeDiaLog(){
-        this.isClose=false
+      router.push("/login")
     }
   }
 }

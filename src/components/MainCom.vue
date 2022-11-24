@@ -1,22 +1,19 @@
 <template>
   <div id="mainCom">
-    <DiaLog></DiaLog>
-    <LoginCom></LoginCom>
-    <CheckerBoardCom></CheckerBoardCom>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import DiaLog from "@/components/DiaLog";
-import LoginCom from "@/components/LoginCom";
-import CheckerBoardCom from "@/components/CheckerBoardCom";
+
+import router from "@/router";
 
 export default {
   name: "MainCom",
+  created() {
+    router.push("/dialog")
+  },
   components: {
-    DiaLog,
-    LoginCom,
-    CheckerBoardCom
   }
 }
 </script>
