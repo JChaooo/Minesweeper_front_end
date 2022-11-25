@@ -2,19 +2,19 @@
   <div id="checkerBoardCom">
     <div class="leftOptions">
       <p class="optionsText">难度选择</p>
-      <button>半年</button>
-      <button>一年</button>
-      <button>一年半</button>
-      <button>两年</button>
-      <button>两年半</button>
+      <button @click="initMine(5)">半年</button>
+      <button @click="initMine(10)">一年</button>
+      <button @click="initMine(20)">一年半</button>
+      <button @click="initMine(30)">两年</button>
+      <button @click="initMine(40)">两年半</button>
     </div>
-    <ChessCom></ChessCom>
+    <ChessCom :mine-index-arr="mineIndexArr" :flag="flag" :uncertain="uncertain" :com-key="comKey"></ChessCom>
     <div class="rightOptions">
       <p class="optionsText">⭐</p>
       <button>游戏记录</button>
       <button>规则说明</button>
-      <button>🚩</button>
-      <button>❓</button>
+      <button @click="changeFlag('flag')">🚩</button>
+      <button @click="changeFlag('uncertain')">❓</button>
     </div>
   </div>
 </template>
@@ -24,9 +24,46 @@ import ChessCom from "@/components/ChessCom";
 
 export default {
   components: {
-    ChessCom
+    ChessCom,
   },
-  name: "CheckerBoardCom"
+  data() {
+    return {
+      mineIndexArr: [],
+      flag: false,
+      uncertain: false,
+      comKey: 0
+    }
+  },
+  name: "CheckerBoardCom",
+  methods: {
+    // 初始化地雷
+    // mines:地雷的数量（5，10，20，30，40）
+    initMine(mines) {
+      // 动态改变传给子组件的key，方便刷新子组件
+      this.comKey=mines;
+      // 置空数组，弹出初始化数组时生成的空元素
+      this.mineIndexArr = []
+      let x, y = 0;
+      for (let i = 0; i < mines; i++) {
+        // 棋盘时20*20布局，坐标取0-19；
+        x = Math.floor(Math.random() * 20);
+        y = Math.floor(Math.random() * 20);
+        this.mineIndexArr.push([x, y]);
+      }
+      console.log("生成的炸弹位置是：", this.mineIndexArr)
+      // this.$emit("changeMines", this.mineIndexArr);
+    },
+    changeFlag(from) {
+      if (from === 'flag') {
+        this.flag = !this.flag
+        this.uncertain = false
+      }
+      if (from === 'uncertain') {
+        this.uncertain = !this.uncertain
+        this.flag = false
+      }
+    }
+  }
 }
 </script>
 
