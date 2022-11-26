@@ -1,9 +1,18 @@
 <template>
   <div class="boardCard" :key="comKey">
-    <!--    <div class="test" v-bind:key="index" v-for="(item,index) in checkerBoard*checkerBoard">-->
+    <div class="text">
+      <div class="optionText">{{ difficulty }}</div>
+    </div>
+    <!--    <div class="grid">-->
+    <!--      <div :id="index" class="defaultStyle" :key="index" v-for="(item,index) in  openChessArr" :class="showWhat(item)"-->
+    <!--           @click="open(item,index)">-->
+    <!--      </div>-->
     <!--    </div>-->
-    <div :id="index" class="defaultStyle" :key="index" v-for="(item,index) in  openChessArr" :class="showWhat(item)"
-         @click="open(item,index)">
+    <div class="rows" v-for="(row,rowIndex) in openChessArr" :key="rowIndex">
+      <div class="cols defaultStyle" v-for="(chess,colIndex) in row" :key="colIndex" :class="showWhat(chess)"
+           @click="open(chess,rowIndex,colIndex)" :id="rowIndex+''+ colIndex">
+        {{chess}}
+      </div>
     </div>
   </div>
 </template>
@@ -11,7 +20,6 @@
 <script>
 import jiJiao from '../static/audio/jijiao.mp3'
 import ji from '../static/audio/ji.mp3'
-// import liangNianBan from '../static/audio/liangnianban.mp3'
 import niMenHuiLeTa from '../static/audio/nimenhuiletadeyisheng.mp3'
 // import zhiYinNiTaiMei from '../static/audio/zhiyinnitaimei.mp3'
 import niGanMa from '../static/audio/niganmahahayo.mp3'
@@ -36,6 +44,14 @@ export default {
     comKey: {
       type: Number,
       default: 0
+    },
+    themeColor: {
+      type: String,
+      default: '#f4c1d18f'
+    },
+    difficulty: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -67,13 +83,14 @@ export default {
       console.log("初始化后的棋局：", this.chessArr)
 
       // 更新渲染数据
-      this.openChessArr = [];
-      this.chessArr.forEach(chess => {
-        chess.forEach(item => {
-          this.openChessArr.push(item)
-        })
-      })
-      this.$forceUpdate
+      // this.openChessArr = [];
+      // this.chessArr.forEach(chess => {
+      //   chess.forEach(item => {
+      //     this.openChessArr.push(item)
+      //   })
+      // })
+
+      this.openChessArr = this.chessArr;
       console.log("arr:", this.openChessArr)
     },
     // 动态的返回棋子的class
@@ -89,16 +106,17 @@ export default {
       }
     },
     // 翻开棋子
-    open(chess, index) {
+    open(chess, rowIndex, colIndex) {
+      let chessId = rowIndex + '' + colIndex;
       // 如果此时是用户的标记操作，则直接返回
       if (this.flag || this.uncertain) {
         if (this.flag) {
           // js动态修改class，拼接的class前面有一个空格，不然会和原本的类名接到一起产生错误
-          document.getElementById(index).className += " flag"
+          document.getElementById(chessId).className += " flag"
           this.playAudio(jiJiao)
         }
         if (this.uncertain) {
-          document.getElementById(index).className += " uncertain"
+          document.getElementById(chessId).className += " uncertain"
           this.playAudio(niGanMa)
         }
         return
@@ -106,11 +124,13 @@ export default {
 
       // 改变棋子的翻开状态
       if (chess === 0) {
-        this.openChessArr[index] = 1
+        this.openChessArr[rowIndex][colIndex] = 1
         this.playAudio(ji)
+        // 如果未触雷，就调用逐层展开的方法
+        // this.oneByOneOpen(rowIndex, colIndex)
       }
       if (chess === -1) {
-        this.openChessArr[index] = 2
+        this.openChessArr[rowIndex][colIndex] = 2
         this.playAudio(niMenHuiLeTa)
       }
     },
@@ -133,22 +153,41 @@ export default {
 .boardCard {
   margin: 0 auto;
   width: 30vw;
-  height: 45vw;
-  background-color: #ffa4c459;
+  height: 85vh;
+  background-color: v-bind(themeColor);
   border-radius: 1rem;
-  /*display: flex;*/
-  /*flex-direction: column;*/
-  /*justify-content: space-around;*/
-  display: grid;
-  grid-template-columns: repeat(v-bind(checkerBoard), calc(30vw / v-bind(checkerBoard)));
-  grid-template-rows:  repeat(v-bind(checkerBoard), calc(30vw / v-bind(checkerBoard)));
-  padding-top: 5vw;
+  padding-top: 7vw;
+  /*border: 1px solid red;*/
+
 }
 
-.defaultStyle {
-  /*background-color: #d5b0bd8a;*/
+.text {
+  height: 15vh;
+  font-weight: bolder;
+  color: white;
+}
+
+.optionText {
+  font-size: 3.5rem;
+}
+
+/*.grid {*/
+/*  !*.rows {*!*/
+/*  display: grid;*/
+/*  grid-template-columns: repeat(v-bind(checkerBoard), calc(30vw / v-bind(checkerBoard)));*/
+/*  !*grid-template-rows:  repeat(v-bind(checkerBoard), calc(30vw / v-bind(checkerBoard)));*!*/
+/*}*/
+
+.rows {
+  display: flex;
+}
+
+.cols {
+  width: 1.5vw;
+  height: 1.5vw;
   margin: 1px;
   border-radius: .2rem;
+  border: 1px solid white;
 }
 
 .noOpen, .open, .mine, .flag, .uncertain {
@@ -158,8 +197,8 @@ export default {
 }
 
 .noOpen {
-  background-color: #d5b0bd8a;
-  background-image: url("../assets/lanqiu.png");
+  /*background-color: #d5b0bd8a;*/
+  /*background-image: url("../assets/lanqiu.png");*/
 }
 
 .open {
