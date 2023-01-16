@@ -12,8 +12,9 @@
 </template>
 
 <script>
-import {api} from "@/request/http";
 import router from "@/router";
+import {request} from "@/request/request";
+import store from "@/store";
 
 export default {
   name: "LoginCom",
@@ -29,18 +30,14 @@ export default {
   },
   methods: {
     login() {
-      console.log(this.user.name)
-      console.log(this.user.password)
       console.log(JSON.stringify(this.user))
-      api({
-        method: 'post',
-        url: '/api/login',
-        data: this.user
-      }).then((res) => {
-        console.log(res)
-        if (res.data.state==="OK"){
+      request.login(this.user).then(({data}) => {
+        console.log(data)
+        if (data.state === "OK") {
+          store.commit('setUser', data.data.DATA)
+          console.log("获取User：", store.state.user)
           router.push("/checker")
-        }else {
+        } else {
           alert("登录失败")
         }
       }).catch((err) => {

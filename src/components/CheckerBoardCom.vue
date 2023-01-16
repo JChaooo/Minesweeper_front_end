@@ -2,20 +2,21 @@
   <div id="checkerBoardCom">
     <div class="leftOptions">
       <p class="optionsText">难度选择</p>
-      <button class="selectedBut1" @click="initMine(5)">半年</button>
-      <button class="selectedBut2" @click="initMine(10)">一年</button>
-      <button class="selectedBut3" @click="initMine(20)">一年半</button>
-      <button class="selectedBut4" @click="initMine(30)">两年</button>
-      <button class="selectedBut5" @click="initMine(40)">两年半</button>
+      <button class="selectedBut1" @click="initMine(options.op1)">半年</button>
+      <button class="selectedBut2" @click="initMine(options.op2)">一年</button>
+      <button class="selectedBut3" @click="initMine(options.op3)">一年半</button>
+      <button class="selectedBut4" @click="initMine(options.op4)">两年</button>
+      <button class="selectedBut5" @click="initMine(options.op5)">两年半</button>
     </div>
     <ChessCom :mine-index-arr="mineIndexArr" :flag="flag" :uncertain="uncertain" :com-key="comKey"
-              :theme-color="themeColor" :difficulty="difficulty"></ChessCom>
+              :theme-color="themeColor" :difficulty="difficulty" v-show="isChessCom"></ChessCom>
+    <RecordCom v-if="!isChessCom" :theme-color="themeColor"></RecordCom>
     <div class="rightOptions">
-      <p class="optionsText">⭐</p>
-      <button>游戏记录</button>
-      <button>规则说明</button>
-      <button @click="changeFlag('flag')">🚩</button>
-      <button @click="changeFlag('uncertain')">❓</button>
+      <p class="optionsText" @click="toBlog()">🐓</p>
+      <button @click="getRecord()">游戏记录</button>
+      <!--      <button>规则说明</button>-->
+      <button @click="changeFlag('flag')" :class="{flagBg:flag}">🚩</button>
+      <button @click="changeFlag('uncertain')" :class="{uncertainBg:uncertain}">❓</button>
     </div>
   </div>
 </template>
@@ -23,14 +24,23 @@
 <script>
 import ChessCom from "@/components/ChessCom";
 import liangNianBan from '../static/audio/liangnianban.mp3'
+import jiJiao from '../static/audio/jijiao.mp3'
+import niGanMa from '../static/audio/niganmahahayo.mp3'
+import {request} from "@/request/request";
+import store from "@/store";
+import RecordCom from "@/components/RecordCom.vue";
+
+const audio = new Audio();
 
 export default {
   components: {
+    RecordCom,
     ChessCom,
   },
   name: "CheckerBoardCom",
   data() {
     return {
+      isChessCom: true,
       mineIndexArr: [],
       flag: false,
       uncertain: false,
@@ -47,6 +57,13 @@ export default {
         but4: 'rgba(234,216,154,0.56)',
         but5: 'rgba(139,163,199,0.56)'
       },
+      options: {
+        op1: 3,
+        op2: 30,
+        op3: 40,
+        op4: 50,
+        op5: 60
+      },
       themeColor: '#f4c1d18f',
       difficulty: '练习生🏀🐓请选择难度'
     }
@@ -55,33 +72,34 @@ export default {
     // 初始化地雷
     // mines:地雷的数量（5，10，20，30，40）
     initMine(mines) {
+      this.isChessCom = true;
       // 防止用户重复点击选择难度
       if (this.comKey === mines) {
         return
       }
       // 选中后切换样式
       switch (mines) {
-        case 5: {
+        case this.options.op1: {
           this.themeColor = this.butColor.but1
           this.difficulty = "半年"
           break
         }
-        case 10: {
+        case this.options.op2: {
           this.themeColor = this.butColor.but2
           this.difficulty = "一年"
           break
         }
-        case 20: {
+        case this.options.op3: {
           this.themeColor = this.butColor.but3
           this.difficulty = "一年半"
           break
         }
-        case 30: {
+        case this.options.op4: {
           this.themeColor = this.butColor.but4
           this.difficulty = "两年"
           break
         }
-        case 40: {
+        case this.options.op5: {
           this.themeColor = this.butColor.but5
           this.difficulty = "两年半"
           break
@@ -100,7 +118,7 @@ export default {
         this.mineIndexArr.push([x, y]);
       }
       // 如果选的两年半难度，那么播放音效
-      if (mines === 40) {
+      if (mines === this.options.op5) {
         const audio = new Audio(liangNianBan);
         audio.play();
       }
@@ -111,11 +129,29 @@ export default {
       if (from === 'flag') {
         this.flag = !this.flag
         this.uncertain = false
+        this.playAudio(jiJiao)
       }
       if (from === 'uncertain') {
         this.uncertain = !this.uncertain
         this.flag = false
+        this.playAudio(niGanMa)
       }
+    },
+    playAudio(src) {
+      audio.pause();
+      audio.src = src
+      audio.play();
+    },
+    getRecord() {
+      this.isChessCom = !this.isChessCom
+      request.record(store.state.user.id).then(res => {
+        store.commit("setRecords", res.data)
+      }).catch(err => {
+        console.log("获取游戏记录失败：", err)
+      })
+    },
+    toBlog(){
+      window.open("https://jc-meet.cn/")
     }
   }
 }
@@ -188,6 +224,13 @@ button {
   font-size: 1.5rem;
   font-weight: bolder;
   margin-top: 3vh;
+}
+.optionsText:hover{
+  cursor: pointer;
+}
+
+.flagBg, .uncertainBg {
+  background-color: blueviolet;
 }
 
 button:hover {

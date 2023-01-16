@@ -2,7 +2,7 @@ module.exports = {
     devServer: {
         proxy: {
             '/api': {
-                target: 'http://192.168.211.22:8090', //接口域名
+                target: 'http://localhost:8090', //接口域名
                 changeOrigin: true,       //是否跨域
                 ws: false,            //是否代理 websockets
                 secure: false,          //是否https接口
